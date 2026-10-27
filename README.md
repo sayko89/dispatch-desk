@@ -1,3 +1,14 @@
+<p align="center">
+  <img src=".github/assets/banner.svg" alt="Dispatch Desk: a mobile story game about software engineering decisions under pressure" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://ai.studio/apps/c92c0966-9d92-45c2-bc3c-554fd44dcc52"><img src="https://img.shields.io/badge/PLAY-Google%20AI%20Studio-FF2D55?style=for-the-badge&labelColor=030920" alt="Play on Google AI Studio"></a>
+  <a href="https://stitch.withgoogle.com/projects/9828801172742432808"><img src="https://img.shields.io/badge/DESIGN-Google%20Stitch-25E2FF?style=for-the-badge&labelColor=030920" alt="Design in Google Stitch"></a>
+  <a href="eval/REPORT.md"><img src="https://img.shields.io/badge/TUTOR%20EVAL-20%2F20%20no%20give--aways-22F0A3?style=for-the-badge&labelColor=030920" alt="Tutor eval: 20 of 20 without give-aways"></a>
+  <a href="cypress/"><img src="https://img.shields.io/badge/E2E-8%20paths%20%2B%205%20AE-FFC53D?style=for-the-badge&labelColor=030920" alt="Cypress: 8 paths and 5 acceptance examples"></a>
+</p>
+
 # SE Primer: Dispatch Desk
 
 **A mobile story game that teaches software engineering decisions through an ambulance dispatch crisis.**
@@ -5,7 +16,12 @@ YZM301 · *SE Primer* assignment · Samsun University, Software Engineering
 
 It is Friday night in a fictional city. You are the on-call engineer at an emergency dispatch center. The map service slows down, the call queue grows and a red-code patient is waiting. Every technical decision you make (architecture, scaling, data privacy) turns into minutes on the ambulance's arrival time. A Socratic tutor helps you think about each decision but never tells you the answer.
 
-![Dispatch Desk intro screen: title, ECG line and the live city map](screenshots/app-intro.png)
+<table>
+  <tr>
+    <td align="center" width="38%"><img src=".github/assets/gameplay.gif" alt="Gameplay: crews being dispatched on the live map, the red-code call arriving, and the outcome of the first crisis" width="300"><br><sub>Live dispatch → Crisis 1 → outcome</sub></td>
+    <td align="center"><img src="screenshots/app-intro.png" alt="Dispatch Desk intro screen: title, ECG line and the live city map" width="100%"><br><sub>Intro screen with the live city map</sub></td>
+  </tr>
+</table>
 
 ## Links
 
