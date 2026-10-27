@@ -263,4 +263,3 @@ Also out of scope, as the brief requires: user accounts and login, a second scen
 
 ---
 
-*Built for YZM301 with help from Claude (Anthropic) for code, design prompts, tests and eval drafting. Tutor eval labels were proposed by Claude and reviewed by the team.*
