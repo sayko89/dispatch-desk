@@ -1,35 +1,35 @@
-# Tasarım (Stitch)
+# Design (Google Stitch)
 
-**Stitch projesi:** https://stitch.withgoogle.com/projects/9828801172742432808
+**Stitch project:** https://stitch.withgoogle.com/projects/9828801172742432808
 
-Ekranlar `stitch/PROMPTS.md`'deki prompt'larla, aynı Stitch projesinde sırayla üretildi. Stitch ayrıca **Nocturnal Dispatch Console** adında bir tasarım sistemi çıkardı.
+The screens were generated with the prompts in [`../stitch/PROMPTS.md`](../stitch/PROMPTS.md), one after another in the same Stitch project. Stitch also produced a design system called **Nocturnal Dispatch Console**.
 
-![Stitch projesinin genel görünümü](00-stitch-overview.png)
+![Overview of the Stitch project](00-stitch-overview.png)
 
-| Ekran | Görüntü | Stitch kodu | Uygulamadaki karşılığı |
+| Screen | Image | Stitch code | In the app |
 |---|---|---|---|
-| 01 · Intro | `01-intro.png` | `01-intro.stitch.html` | Giriş ekranı (`basla`) |
-| 02 · Crisis | `02-crisis.png` | `02-crisis.stitch.html` | Kriz sahnesi (`karar-1-a/b`) |
-| 03 · End | `03-end.png` | `03-end.stitch.html` | Son ekranı (`son-a/b`, `karne`) |
-| 04 · Outcome | `04-outcome.png` | `04-outcome.stitch.html` | Karar sonucu (`sonuc-ne-oldu`, `sonuc-neden`) |
+| 01 · Intro | `01-intro.png` | `01-intro.stitch.html` | Intro screen (`basla`) |
+| 02 · Crisis | `02-crisis.png` | `02-crisis.stitch.html` | Crisis scene (`karar-1-a/b`) |
+| 03 · End | `03-end.png` | `03-end.stitch.html` | End screen (`son-a/b`, `karne`) |
+| 04 · Outcome | `04-outcome.png` | `04-outcome.stitch.html` | Decision outcome (`sonuc-ne-oldu`, `sonuc-neden`) |
 
-Ödev üç ekran istiyordu: giriş, sahne ve son. Dördüncü ekran olan karar sonucunu ek olarak tasarladık, çünkü oyunun öğrettiği yer orası.
+The assignment asks for three screens: intro, scene and end. We added a fourth, the decision outcome, because that is where the game teaches.
 
-`DESIGN.stitch.md` Stitch'in dışa aktardığı tasarım sistemidir. Repo kökündeki `DESIGN.md` ise uygulamada gerçekten kullanılan değerleri anlatır.
+`DESIGN.stitch.md` is the design system exported from Stitch. The root [`DESIGN.md`](../DESIGN.md) describes the values the app actually uses.
 
-## Tasarımdan koda: ne aynı kaldı, ne değişti
+## From design to code: what stayed and what changed
 
-**Aynı kalanlar**
-- Renk token'larının hepsi (lacivert zemin, neon kırmızı, camgöbeği, amber, yeşil, mor) ve "kırmızı yalnızca alarm ve kırmızı kod için" kuralı.
-- Ekran sırası: durum şeridi, harita, ilerleme çubuğu, içerik.
-- Karakter mesaj balonları, üçlü gösterge kartları, A/B karar kartları, dakika dökümü tablosu ve vardiya karnesi.
+**What stayed**
+- All color tokens (navy ground, neon red, cyan, amber, green, violet) and the rule that red is only for alarms and red codes.
+- The screen order: status bar, map, progress bar, content.
+- Character message bubbles, the three gauge cards, the A/B decision cards, the minute breakdown table and the shift report.
 
-**Bilerek farklı bıraktıklarımız**
-- **Başlık fontu:** Stitch'in tasarım sistemi başlıklarda Space Grotesk önerdi. Uygulamada Chakra Petch'i tuttuk, çünkü daraltılmış köşeli formu monitör ve komuta paneli hissini daha iyi veriyor.
-- **Harita:** Stitch haritayı sokak adlarıyla gerçek bir şehir gibi çizdi. Uygulamada harita kurgusal bir ızgara ve canlı: ambulanslar hareket ediyor, çağrılar yanıp sönüyor, kapalı yol beliriyor.
-- **Sonuç ekranındaki metinler:** Stitch, sonuç ekranında senaryoda olmayan ayrıntılar uydurdu ("Main Avenue'da su borusu patlaması", "TTL 24 saat"). Uygulamadaki metinler spec'teki senaryoya bağlı kaldı. Böylece tutor ve eval aynı olaylardan bahsediyor.
-- **Tutor:** Stitch, tutor'un sorusunu sonuç ekranına doğrudan yerleştirdi. Uygulamada tutor, oyuncu "Ask the tutor" dediğinde açılan bir alt panelde konuşuyor, çünkü oyuncunun önce sonucu kendisinin okuması gerekiyor.
+**What we deliberately changed**
+- **Headline font:** Stitch's design system suggested Space Grotesk for headlines. We kept Chakra Petch, because its condensed, angular shapes feel more like monitor and command-console equipment.
+- **Map:** Stitch drew the map as a realistic city with street names. In the app the map is a fictional grid, and it is live: ambulances move, calls pulse and a closed road appears.
+- **Outcome text:** On the outcome screen Stitch invented details that are not in the scenario (a "water main rupture on Main Avenue", "TTL of 24 hours"). The app's text sticks to the scenario in the spec, so the tutor and the eval talk about the same events.
+- **Tutor:** Stitch placed the tutor's question directly on the outcome screen. In the app the tutor speaks in a bottom sheet that opens when the player taps "Ask the tutor", because the player should read the outcome first.
 
-**Stitch'ten aldığımız fikirler**
-- Sonuç ekranında "What happened" ve "Why it happened" bloklarının ayrı kartlar olması.
-- Son ekranında rotanın haritada baştan sona çizili görünmesi. Uygulamada bu, 7-A'nın izi olarak var.
+**Ideas we took from Stitch**
+- Separate cards for "What happened" and "Why it happened" on the outcome screen.
+- Showing the full route on the map on the end screen. In the app this is 7-A's trail.

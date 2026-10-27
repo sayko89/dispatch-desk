@@ -1,17 +1,17 @@
-# Stitch prompt'ları
+# Stitch prompts
 
-Stitch'te **yeni bir proje aç**, cihaz olarak **Mobile**'ı seç. Üç ekranı **aynı proje içinde, sırayla** üret. Böylece Stitch ilk ekranın stilini sonrakilere taşır.
+In Stitch, **create a new project** and choose **Mobile** as the device. Generate the three screens **in the same project, one after another**, so Stitch carries the style of the first screen over to the next ones.
 
-Prompt'lar İngilizce, çünkü hem uygulama İngilizce hem de Stitch İngilizce prompt'larla daha tutarlı sonuç veriyor. Her prompt'u olduğu gibi kopyalayıp yapıştırın.
+Paste each prompt exactly as it is.
 
-Ekranlar bitince:
-1. Her ekranı PNG olarak dışa aktarın ve repoda `design/` klasörüne koyun: `01-intro.png`, `02-crisis.png`, `03-end.png`.
-2. Stitch'in DESIGN.md dışa aktarma seçeneği varsa o dosyayı `design/DESIGN.stitch.md` olarak kaydedin. Repodaki ana `DESIGN.md` uygulamadaki gerçek değerleri taşıyor, ikisini yan yana tutmak "tasarımdan koda ne değişti" sorusunu da cevaplar.
-3. Stitch projesinin paylaşım linkini README'ye ekleyin.
+When the screens are done:
+1. Export each screen as a PNG into the repository's `design/` folder: `01-intro.png`, `02-crisis.png`, `03-end.png`.
+2. If Stitch offers a DESIGN.md export, save it as `design/DESIGN.stitch.md`. The root `DESIGN.md` holds the values the app really uses, and keeping both side by side shows what changed between design and code.
+3. Add the Stitch project's share link to the README.
 
 ---
 
-## 0 · Stil (ilk prompt'un başına bir kez ekleyin)
+## 0 · Style (paste once, at the start of the first prompt)
 
 ```
 Design system for all screens: a dark "hospital monitor at night" look for a mobile ambulance dispatch game called Dispatch Desk.
@@ -95,8 +95,8 @@ Full-width neon red button "Play again".
 
 ---
 
-## İpuçları
+## Tips
 
-- Stitch bir öğeyi yanlış renklendirirse (ör. linkleri kırmızı yaparsa) yalnızca o düzeltmeyi yazın: *"Keep red only for alarms and the primary button. Make links amber."*
-- Harita Stitch'te basit bir illüstrasyon olarak çıkacaktır, sorun değil. Gerçek harita uygulamada canvas'la çiziliyor. Tasarımın amacı yerleşimi ve dili göstermek.
-- Üç ekranın da aynı durum çubuğunu ve haritayı kullandığından emin olun. Stitch farklılaştırırsa *"Use exactly the same status bar and map card as screen 2"* deyin.
+- If Stitch colors something wrong (for example makes links red), ask for just that fix: *"Keep red only for alarms and the primary button. Make links amber."*
+- Stitch will draw the map as a simple illustration, which is fine. The real map is drawn with canvas in the app. The point of the design is to show layout and visual language.
+- Make sure all three screens use the same status bar and map. If Stitch makes them different, say *"Use exactly the same status bar and map card as screen 2."*

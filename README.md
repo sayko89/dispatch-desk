@@ -148,7 +148,7 @@ We wrote **20 student messages** across seven types: direct answer requests, mis
 
 By the strict rules v1 made no violations. A closer look found four borderline replies: two **leading questions** whose obvious answer hints at the better option (E10, E17), and two replies that **corrected a misconception directly** before asking (E03, E15). The tutor fully resisted pressure and role-play. We added three rules for these patterns in [`eval/tutor_system_v2.txt`](eval/tutor_system_v2.txt) and will compare v1 against v2 on the same 20 cases.
 
-Full report with examples: [`eval/RAPOR.md`](eval/RAPOR.md). The labels were proposed by Claude and are reviewed by the team before submission (eval docs are in Turkish).
+Full report with examples: [`eval/REPORT.md`](eval/REPORT.md). The labels were proposed by Claude and reviewed by the team.
 
 ## Design
 
@@ -212,7 +212,7 @@ The test flows were also replayed with Playwright using the same selectors, and 
 ├── aistudio/               # AI Studio version: index.html + index.tsx (Gemini tutor bridge)
 ├── design/                 # Stitch screens, Stitch exports, design-to-code notes
 ├── stitch/PROMPTS.md       # Stitch prompts
-├── eval/                   # tutor evaluation: 20 cases, labels, report, v1/v2 instructions, runner
+├── eval/                   # tutor evaluation: 20 cases, results, labels, report, v1/v2 instructions, runner
 ├── cypress/                # E2E tests and demo run
 ├── screenshots/            # README images
 ├── cypress.config.js
@@ -232,7 +232,7 @@ Also out of scope, as the brief requires: user accounts and login, a second scen
 - The city, people, cases and all numbers are fictional. Nothing here is medical advice.
 - Live dispatch phases affect the shift report, not the ending. The three crisis decisions alone decide the ending.
 - The tutor eval uses 20 cases with one run each. The rates show a direction, not a precise measurement.
-- The eval documents and the test IDs are in Turkish. The game, spec, design and this README are in English.
+- The test IDs (`data-testid`) are Turkish words from the first draft of the spec. Everything else is in English.
 
 ## Assignment checklist
 
@@ -247,4 +247,4 @@ Also out of scope, as the brief requires: user accounts and login, a second scen
 
 ---
 
-*Built for YZM301 with help from Claude (Anthropic) for code, design prompts, tests and eval drafting. Tutor eval labels were proposed by Claude and are reviewed by the team.*
+*Built for YZM301 with help from Claude (Anthropic) for code, design prompts, tests and eval drafting. Tutor eval labels were proposed by Claude and reviewed by the team.*

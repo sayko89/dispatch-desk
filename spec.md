@@ -254,4 +254,4 @@ stateDiagram-v2
 | How much does the role change? | Only who opens each crisis and how they frame it. Decisions and numbers stay the same, so the paths remain testable. |
 | Should the end screen say which path was best? | No. It shows the path ID and the minute breakdown, and the player draws the conclusion. Saying "P5 was best" would contradict the tutor's no-answers rule. |
 | Should live phases affect the ending? | No. The ending stays a pure function of the three decisions, so the 8-path table holds. Live phases feed the shift report. |
-| Language | The app, README and this spec are in English. The eval documents are in Turkish. |
+| Language | Everything is in English except the test IDs, which keep their original Turkish names. |
