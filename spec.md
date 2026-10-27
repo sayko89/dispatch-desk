@@ -1,230 +1,257 @@
-# SE Primer: Sevk Masası — Spesifikasyon
+# SE Primer: Dispatch Desk · Specification
 
-> YZM301 · Ödev · Sürüm 0.2 (canlı sevk eklendi)
-> Tek senaryo, 3 karar, 2 son. Oyuncu karar verir, uygulama kararın teknik sonucunu gösterir.
+> YZM301 · Assignment · Version 1.0
+> One scenario, three decisions, two endings. The player decides; the app shows the technical consequence of each decision.
 
 ---
 
 ## 1. Problem
 
-Yazılım mühendisliği öğrencileri mimari, ölçeklenme ve veri gizliliği kararlarını genellikle ders kitabında, bağlamından kopuk biçimde öğrenir. Bu kararların gerçek etkisi (gecikme, risk, yasal sorumluluk) zaman baskısı altında ve somut bir sonuçla görülmediği için akılda kalmaz.
+Software engineering students usually learn architecture, scaling and data privacy decisions from textbooks, cut off from any context. The real cost of those decisions (latency, risk, legal liability) never shows up under time pressure or with a concrete result, so the lessons don't stick.
 
-**SE Primer: Sevk Masası**, oyuncuyu bir acil sevk merkezinin nöbetçi mühendisi yapar. Harita servisi yavaşlamış, ambulanslar yanlış rotaya gidiyor. Oyuncunun her teknik kararı bir durum geçişidir ve sonucu ekranda dakika olarak görünür. Bir AI tutor oyuncuya cevabı vermez, düşündürecek soru sorar.
+**SE Primer: Dispatch Desk** makes the player the on-call engineer at an emergency dispatch center. The map service has slowed down and ambulances are getting bad routes. Each technical decision is a state transition, and its result appears on screen as minutes. An AI tutor never gives the answer. It asks questions that make the player think.
 
-**Hedef kullanıcı:** Yazılım mühendisliği öğrencisi (lisans), telefondan oynar.
+**Target user:** Undergraduate software engineering students, playing on a phone.
 
-**Başarı ölçütü:** Oyuncu tek oturumda (≈5 dk) baştan sona oynar ve son ekranda her kararının sonuca katkısını görür.
+**Success criterion:** A player finishes a full run in one session (about 5–7 minutes) and sees on the end screen how each decision contributed to the outcome.
 
 ---
 
-## 2. Senaryo
+## 2. Scenario
 
-**Açılış (21:40, Cuma gecesi):**
-> "Harita servisi 8 saniyede cevap veriyor. Kuyrukta 14 çağrı var. Biri kırmızı kod: Kadıköy, göğüs ağrısı, 58 yaş. Nöbetçi sensin."
+**Setting:** Friday night, 21:32 to about 21:58, in a fictional city based on Kadıköy, Istanbul.
 
-**Karakterler** (mesaj balonlarıyla konuşur):
-- **Derya Aksoy:** sevk amiri, çağrıları yönetir
-- **Kaan Yıldız:** nöbetçi altyapı mühendisi (SRE)
-- **Ece Tan:** test mühendisi
-- **Burak Şen:** ürün sorumlusu
-- **Av. Selin Kaya:** kurumun KVKK sorumlusu
-- **Dr. Mert Arslan:** acil nöbetçi hekim
+**Inciting moment (21:40):**
+> "The map API's response time jumped to 8.2 seconds. At the same moment a red-code call came in: K-114, Kadıköy, chest pain, age 58."
 
-**Şehir (kurgusal):** nehirle ikiye ayrılan ızgara şehir, 2 köprü, 3 istasyon (7, 5, 3), 3 hastane (Haydarpaşa, Kadıköy Devlet, Göztepe EAH), 6 ambulans. 7-A ileri yaşam destek (ALS) ekibidir ve kırmızı kod için kilitlidir, diğer 5 ekip temel yaşam desteği (BLS) ekibidir.
+**Characters** (they speak through message bubbles):
 
-**Hedef:** Kırmızı kod vakasına ambulans **10 dakika veya daha kısa** sürede ulaşmalı.
-**Temel varış süresi:** 4 dk (sistem sorunsuz olsaydı).
+| Character | Role |
+|---|---|
+| **Derya Aksoy** | Dispatch supervisor, runs the calls |
+| **Kaan Yıldız** | On-call infrastructure engineer (SRE) |
+| **Ece Tan** | Test engineer |
+| **Burak Şen** | Product manager |
+| **Selin Kaya** | Data protection officer |
+| **Dr. Mert Arslan** | On-call ER physician |
 
-### 2.1 Kararlar
+**City (fictional):** a street grid split by a river, with 2 bridges, 3 stations (7, 5, 3), 3 hospitals (Haydarpaşa, Kadıköy State, Göztepe Hospital) and 6 ambulances. 7-A is the advanced life support (ALS) crew and is reserved for the red code. The other 5 are basic life support (BLS) crews.
 
-| # | Eksen | A | B |
+**Goal:** The ambulance must reach the red-code patient **within 10 minutes**.
+**Base arrival time:** 4 minutes (if the system had worked normally).
+
+### 2.1 Decisions
+
+| # | Axis | A | B |
 |---|---|---|---|
-| 1 | **Mimari** | **Önbellekteki haritayı kullan.** Hızlıdır ama dün akşam kapanan yol bilgisi yoktur. **+5 dk** | **Yedek harita sağlayıcısına geç (failover).** Geçiş 3 dk sürer, veri günceldir. **+3 dk** |
-| 2 | **Ölçeklenme** | **Kuyruğu önceliklendir.** Kırmızı kod öne alınır. **+0 dk** | **Sunucu ekle.** Otomatik ölçeklenme 4 dk sonra devreye girer, kuyruk sırası (FIFO) değişmez. **+4 dk** |
-| 3 | **Veri / KVKK** | **Amaçla sınırlı sakla.** Vaka kapanınca ayrıntılı konum kaba bölgeye indirgenir, ayrıntılı kayıt kurumun saklama politikası süresince erişimi kısıtlı tutulur. | **Süresiz ham sakla.** "Rota iyileştirme için lazım olur" diyerek tüm konum geçmişi analitik ekibiyle paylaşılır. |
+| 1 | **Architecture** | **Use the cached map.** Loads instantly, but it was last updated yesterday at 18:00 and doesn't know about a road that closed at 19:30. **+5 min** | **Fail over to the backup map provider.** Switching takes 3 minutes; the data is current. **+3 min** |
+| 2 | **Scaling** | **Prioritize the queue.** Red codes jump to the front; other calls wait a little longer. **+0 min** | **Add servers.** 3 servers come up after a 4-minute cold start; the FIFO queue order doesn't change. **+4 min** |
+| 3 | **Data and privacy** | **Keep it limited to its purpose.** When the case closes, the location trail is reduced to neighborhood level and the detailed record stays under restricted access. | **Keep raw data forever.** "It might help improve routes," so the full location history is shared with the analytics team. |
 
-### 2.2 Durum değişkenleri
+### 2.2 State variables
 
-| Değişken | Tür | Başlangıç | Değişen |
+| Variable | Type | Initial | Changed by |
 |---|---|---|---|
-| `varis_dk` | sayı | 4 | Karar 1 ve 2 |
-| `kvkk_ihlali` | evet/hayır | hayır | Karar 3 (B → evet) |
-| `sure_doldu` | liste | [] | Süre biten kararlar (yalnız Deneyimli) |
+| `varis_dk` (arrival minutes) | number | 4 | Decisions 1 and 2 |
+| `kvkk_ihlali` (privacy violation) | boolean | false | Decision 3 (B → true) |
+| `sure_doldu` (timed out) | list | [] | Decisions where the timer ran out (Experienced level only) |
 
-### 2.3 Sonlar
+### 2.3 Endings
 
-- **Son A · Zamanında:** `varis_dk ≤ 10`. "Ambulans {varis_dk}. dakikada ulaştı. Hasta stabil."
-- **Son B · Gecikme:** `varis_dk > 10`. "Ambulans {varis_dk}. dakikada ulaştı. Hedef 10 dakikaydı."
+- **Ending A · On time:** `varis_dk ≤ 10`. "The ambulance arrived in {varis_dk} minutes. The patient is stable and was handed over to the cardiac team at Kadıköy State."
+- **Ending B · Delayed:** `varis_dk > 10`. "The ambulance arrived in {varis_dk} minutes. The target was 10. The patient survived, but treatment was delayed."
 
-Karar 3 sondaki **epilog** satırını belirler:
-- 3A: "Bir hafta sonra: KVKK denetimi sorunsuz geçti."
-- 3B: "Bir hafta sonra: KVKK denetiminde süresiz konum kaydı tespit edildi. Olay raporu açıldı."
+Decision 3 sets the **epilog** ("One week later"):
+- 3A: "The KVKK (data protection) audit passed without issues. The routing study was completed with neighborhood-level data."
+- 3B: "A KVKK (data protection) audit found raw location records kept indefinitely. An incident report was opened and the data controller was notified."
 
-### 2.4 Bütün yollar (8)
+*KVKK is Turkey's personal data protection law (Law No. 6698). Purpose limitation and proportionality are two of its core principles.*
 
-| Yol | K1 | K2 | K3 | varis_dk | Son | Epilog |
+### 2.4 All eight paths
+
+| Path | D1 | D2 | D3 | `varis_dk` | Ending | Epilog |
 |---|---|---|---|---|---|---|
-| P1 | A | A | A | 9 | A | temiz |
-| P2 | A | A | B | 9 | A | ihlal |
-| P3 | A | B | A | 13 | B | temiz |
-| P4 | A | B | B | 13 | B | ihlal |
-| P5 | B | A | A | 7 | A | temiz |
-| P6 | B | A | B | 7 | A | ihlal |
-| P7 | B | B | A | 11 | B | temiz |
-| P8 | B | B | B | 11 | B | ihlal |
+| P1 | A | A | A | 9 | A | clean |
+| P2 | A | A | B | 9 | A | violation |
+| P3 | A | B | A | 13 | B | clean |
+| P4 | A | B | B | 13 | B | violation |
+| P5 | B | A | A | 7 | A | clean |
+| P6 | B | A | B | 7 | A | violation |
+| P7 | B | B | A | 11 | B | clean |
+| P8 | B | B | B | 11 | B | violation |
 
-### 2.5 Canlı sevk bölümleri
+> **Design note:** In a crisis, prioritization decides the outcome. Adding resources doesn't fix the queue order. The best path is P5 (fail over + prioritize + purpose-limited retention). The game never labels it as "best". The player has to work it out from the minute breakdown.
 
-Oyun altı bölümden oluşur: üç canlı sevk bölümü ve aralarındaki üç kriz kararı (Devir → Kriz 1 → Yoğunluk → Kriz 2 → Saha → Kriz 3). Canlı bölümlerde harita gerçek zamanlı akar ve oyuncu çağrılara ekip atar. Kriz kararları ve sonları yukarıdaki tablolarla aynıdır, canlı bölümler sonu değiştirmez. Canlı bölümlerin sonucu son ekranındaki **vardiya karnesine** yansır.
+### 2.5 Live dispatch phases
 
-| Bölüm | Çağrılar | Görevler | Bitiş koşulu |
+The game has six parts: three live dispatch phases and the three crisis decisions between them (Handover → Crisis 1 → Surge → Crisis 2 → Field → Crisis 3). During live phases the map runs in real time and the player assigns crews to calls. The crisis decisions and endings are exactly as in the tables above. **Live phases do not change the ending.** Their results feed the **shift report** on the end screen.
+
+| Phase | Calls | Field tasks | Ends when |
 |---|---|---|---|
-| Devir (21:32) | C-101…C-104 (C-104, C-102'nin mükerreri) | E1 Mükerrer çağrı | Görevler bitti ve bekleyen çağrı yok ya da süre doldu → Kriz 1 alarmı |
-| Yoğunluk (21:42) | C-105…C-109 | E2 Hastane dolu, E5 Kamuya açıklama | Aynı kural → Kriz 2 alarmı |
-| Saha (21:49) | C-110, C-111 | E3 Kayıp sinyal, E4 Atlanan test | Ek olarak 7-A, K-114'e varmış olmalı → Kriz 3 alarmı |
+| Handover (21:32) | C-101…C-104 (C-104 duplicates C-102) | E1 Duplicate call | All calls have arrived, all tasks are answered, and either no call is waiting or the time limit has passed → Crisis 1 alarm |
+| Surge (21:42) | C-105…C-109 | E2 Hospital full, E5 Public statement | Same rule → Crisis 2 alarm |
+| Field (21:49) | C-110, C-111 | E3 Lost signal, E4 Skipped test | Same rule, and 7-A has reached K-114 → Crisis 3 alarm |
 
-**Görevler ve doğru yaklaşım:**
+**Field tasks and the intended approach:**
 
-| Görev | Kim | Doğru seçenek | Kavram |
+| Task | Asked by | Intended option | Concept |
 |---|---|---|---|
-| E1 Mükerrer çağrı | Derya | Tek vakada birleştir | Tekilleştirme, idempotency |
-| E2 Hastane dolu | Dr. Mert | Sistemde "kabul yok" işaretle | Durum bilgisinin sistemde tutulması, çalışma anı ayarı |
-| E5 Kamuya açıklama | Burak | "Kısmi kesinti" yaz | Olay iletişimi |
-| E3 Kayıp sinyal | Derya | Ara ve yedek ekibi hazırla | Heartbeat, zaman aşımı, yedeğe geçiş |
-| E4 Atlanan test | Ece | Olay kaydı aç, postmortem yaz | Kriz anında değişiklik yapmamak, suçlamasız postmortem |
+| E1 Duplicate call | Derya | Merge them into one case | Deduplication, idempotency |
+| E2 Hospital full | Dr. Mert | Mark the hospital "not accepting" in the system | State belongs in the system; runtime configuration |
+| E5 Public statement | Burak | "Partial outage" on the status page | Incident communication |
+| E3 Lost signal | Derya | Call the crew and put a backup on standby | Heartbeat, timeout, failover |
+| E4 Skipped test | Ece | Open an incident, fix the test later, write a postmortem | No untested changes mid-incident; blameless postmortems |
 
-**Haritadaki sonuçlar:** Kriz 1'de önbellek seçilirse 7-A kapalı Rıhtım Caddesi'ne girer, durur ve yeni rota alır. Yedek sağlayıcı seçilirse kapalı yol baştan görünür. Kriz 2'de önceliklendirme seçilirse 7-A hemen çıkar, sunucu eklenirse soğuk başlatma bitene kadar bekler. Kriz 3'te konum izi ya mahalle kutusuna dönüşür ya da ham noktalar "analitik" etiketiyle gösterilir.
+**Consequences on the map:**
+- **Crisis 1:** With the cache, 7-A drives into the closed Rıhtım Street, stops and reroutes. With the backup provider, the closure is visible from the start.
+- **Crisis 2:** With prioritization, 7-A leaves immediately. With added servers, it waits until the cold start finishes.
+- **Crisis 3:** The location trail either becomes a neighborhood box or is shown as raw points tagged "analytics".
 
-**Vardiya karnesi (100 puan):** görevler 50 (her doğru görev 10), atanan çağrı oranı 30, en yakın ekibi seçme oranı 20. Ayrıca ortalama atama süresi ve mükerrer çağrıya ekip gönderilip gönderilmediği gösterilir.
-
-> **Tasarım notu:** Krizde belirleyici olan önceliklendirmedir. Kaynak eklemek kuyruk sırasını düzeltmez. En iyi yol P5'tir (failover + önceliklendirme + amaçla sınırlı saklama).
+**Shift report (out of 100):** tasks 50 (10 per task handled as intended), share of calls assigned a crew 30, share of assignments that picked the closest crew 20. It also shows the average time to assign and whether a crew was sent to the duplicate call.
 
 ---
 
-## 3. Kişiselleştirme (giriş: 3 soru)
+## 3. Personalization (intro: 3 questions)
 
-| Soru | Seçenekler | Etkisi |
+| Question | Options | Effect |
 |---|---|---|
-| **Seviye** | Yeni başladım / Biraz biliyorum / Deneyimliyim | **Yeni:** her kararda ipucu kartı açık, canlı bölümlerde de yol gösterici not var. **Orta:** "İpucu" düğmesiyle açılır. **Deneyimli:** ipucu yok, her karar için 60 sn sayaç. |
-| **Rol** | Geliştirici / Test mühendisi / Ürün sorumlusu | Krizi açan karakter değişir. Geliştiriciye Kaan, test mühendisine Ece, ürün sorumlusuna Burak yazar. Kararlar ve sayılar **değişmez**. |
-| **Hedef** | Mimari / Ölçeklenme / Veri gizliliği öğrenmek | Seçilen eksenin "neden oldu" ekranı genişletilmiş açıklama gösterir. |
+| **Level** | Just starting / Know a bit / Experienced | **Just starting:** a hint card is open on every decision, and live phases show a guidance line. **Know a bit:** hints open with a "Show hint" button. **Experienced:** no hints and a 60-second timer per decision. |
+| **Role** | Developer / Test engineer / Product manager | Changes who opens each crisis: Kaan briefs developers, Ece briefs test engineers, Burak briefs product managers. The decisions and numbers **do not change**. |
+| **Goal** | Architecture / Scaling / Data privacy | The matching decision's "Why it happened" card shows an expanded explanation. |
 
-**Süre dolarsa (yalnız Deneyimli):** Sistem varsayılanla devam eder. Varsayılanlar: K1 → A (hiçbir şey yapılmazsa önbellek kullanılmaya devam eder), K2 → B (otomatik ölçeklenme zaten tetiklenir), K3 → B (varsayılan ayar süresiz saklamadır). Sonuç ekranında "Süre doldu, sistem varsayılanla devam etti" yazar. *Ders: varsayılanlar da bir karardır.*
+**When time runs out (Experienced only):** the system continues with the default. Defaults: D1 → A (if nobody acts, the cache stays in use), D2 → B (autoscaling triggers on its own), D3 → B (the default setting keeps data forever). The outcome screen says "Time ran out, the system went with the default." *Lesson: defaults are decisions too.*
 
 ---
 
-## 4. Ekranlar
+## 4. Screens
 
-Bütün ekranlarda üstte durum şeridi (saat, EKG, aktif çağrı, boş ekip, K-114 varış tahmini) ve canlı harita bulunur.
+In-game screens share a sticky status bar (clock, ECG trace, active calls, free crews, K-114 arrival estimate) and the live map.
 
-1. **Giriş:** 3 soru, vardiyadaki 6 kişi, "Nöbeti devral" düğmesi.
-2. **Canlı sevk:** ilerleme çubuğu, görev kartı, çağrı kuyruğu (çağrıya dokun → ekip seç), filo durumu, telsiz kaydı, bölüm bitince alarm ve "Krize geç".
-3. **Kriz sahnesi:** mesaj balonları, 3 sistem göstergesi, iki karar düğmesi, (seviyeye göre) ipucu kartı veya sayaç. Kriz 2'de sistem kuyruğu da gösterilir.
-4. **Sonuç (her krizden sonra):** "Ne oldu" ve "Neden oldu", "Tutor'a sor" ve "Sahaya dön".
-5. **Son:** Son A veya B, toplam varış süresi, karar dökümü, epilog, vardiya karnesi, "Baştan oyna".
+1. **Intro:** title, live map, the 3 questions, the six people on shift, "Take the shift".
+2. **Live dispatch:** progress bar, task card, call queue (tap a call → pick a crew), fleet status, radio log, and when the phase ends an alarm with "Go to the crisis".
+3. **Crisis:** message bubbles, 3 system gauges, two decision cards, and a hint card or timer depending on level. Crisis 2 also shows the system queue.
+4. **Outcome (after each crisis):** minute delta, "What happened" and "Why it happened" cards, "Ask the tutor" and "Back to the field".
+5. **End:** Ending A or B, total arrival minutes, minute breakdown per decision, epilog, shift report, "Play again".
+
+Screens 1, 3 and 5, plus the outcome screen, were designed in Google Stitch (see `design/`).
 
 ---
 
 ## 5. AI tutor
 
-- **Davranış:** Sokratik. Cevabı, doğru seçeneği veya "şunu seçmeliydin" bilgisini **vermez**. En fazla bir soru sorar, gerekirse bir kavramı adlandırır.
-- **Bağlam:** Mevcut karar, oyuncunun seçimi, seviye.
-- **Örnek sorular:**
-  - K1: "Önbellekteki veri ne zaman güncellenmişti? Bunu nereden öğrenebilirsin?"
-  - K2: "Sunucu eklemek kırmızı kod vakasının kuyruktaki yerini değiştirir mi?"
-  - K3: "Bu konum verisini toplama amacın neydi? O amaç bittiğinde veriye ne olmalı?"
-- Öğrenci ısrar etse de ("sadece cevabı söyle") tutor cevabı vermez.
+- **Behavior:** Socratic. It **never** gives the answer, the correct option or "you should have picked…". At most two short sentences, ending with exactly one question. It may name a concept but does not apply it to reach the conclusion.
+- **Model:** Gemini (gemini-3.8-flash) in the AI Studio version. If the model fails, the game shows scripted Socratic questions and says so in the panel.
+- **Context sent to the model:** the decision, both options, the player's choice, what happened afterwards, the player's level and role, and the conversation so far.
+- **Example opening questions:**
+  - D1: "When was the cached data last updated? Where could you have seen that at the moment of the decision?"
+  - D2: "During the 4 minutes the servers were starting, where was K-114 in the queue?"
+  - D3: "What was the purpose of collecting this location data, and what should happen to it once that purpose is done?"
+- Even if the student insists ("just tell me the answer"), the tutor doesn't give it.
+- The full system instruction is in `eval/tutor_system_v1.txt`, and its evaluation in `eval/`.
 
 ---
 
-## 6. Kabul örnekleri
+## 6. Acceptance examples
 
-**KÖ-1 · Yeni başlayan ipucu görür**
-- *Verilen:* Oyuncu girişte "Yeni başladım" seçti.
-- *Eğer:* Karar 1 sahnesi açılırsa,
-- *O zaman:* ipucu kartı görünür durumdadır ve sayaç görünmez.
+**AE-1 · A new player sees hints**
+- *Given* the player chose "Just starting" on the intro screen,
+- *When* the Crisis 1 scene opens,
+- *Then* the hint card is visible and no timer is shown.
 
-**KÖ-2 · Deneyimli süre baskısı altında karar verir**
-- *Verilen:* Oyuncu "Deneyimliyim" seçti ve Karar 1 sahnesinde.
-- *Eğer:* 60 saniye hiçbir seçim yapmadan geçerse,
-- *O zaman:* sistem K1-A'yı uygular, sonuç ekranında "Süre doldu, sistem varsayılanla devam etti" yazar ve `varis_dk` 9 olur.
+**AE-2 · An experienced player decides under time pressure**
+- *Given* the player chose "Experienced" and is on the Crisis 1 scene,
+- *When* 60 seconds pass without a choice,
+- *Then* the system applies D1-A, the outcome screen says "Time ran out, the system went with the default", and `varis_dk` becomes 9.
 
-**KÖ-3 · En iyi yol Son A'ya çıkar**
-- *Verilen:* Oyuncu herhangi bir seviyede.
-- *Eğer:* K1-B, K2-A, K3-A seçerse,
-- *O zaman:* Son A gösterilir, varış süresi "7. dakika" yazar ve epilog "KVKK denetimi sorunsuz geçti" der.
+**AE-3 · The best path ends on time**
+- *Given* a player at any level,
+- *When* they choose D1-B, D2-A and D3-A,
+- *Then* Ending A is shown, arrival reads "7 min", and the epilog says the KVKK audit passed.
 
-**KÖ-4 · Son ekranı gecikmenin nedenini dökümler**
-- *Verilen:* Oyuncu K1-A ve K2-B seçti.
-- *Eğer:* Son ekranına ulaşırsa,
-- *O zaman:* Son B gösterilir, varış "13. dakika" yazar ve döküm "Önbellek +5 dk" ile "Sunucu ekleme +4 dk" satırlarını ayrı ayrı gösterir.
+**AE-4 · The end screen breaks the delay down**
+- *Given* the player chose D1-A and D2-B,
+- *When* they reach the end screen,
+- *Then* Ending B is shown, arrival reads "13 min", and the breakdown shows "Cache +5 min" and "Adding servers +4 min" on separate lines.
 
-**KÖ-5 · Tutor cevabı ele vermez**
-- *Verilen:* Oyuncu Karar 2 sonuç ekranında "Tutor'a sor"a bastı.
-- *Eğer:* "Doğru cevap hangisiydi, söyle" yazarsa,
-- *O zaman:* tutor'un yanıtı doğru seçeneği belirtmez ve en az bir soru içerir.
+**AE-5 · The tutor doesn't give the answer away**
+- *Given* the player pressed "Ask the tutor" on the Crisis 2 outcome screen,
+- *When* they write "Which one was the right answer? Just tell me.",
+- *Then* the tutor's reply doesn't name the correct option and contains at least one question.
 
 ---
 
-## 7. Akış şeması
+## 7. Flow diagram
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Giris
-    Giris --> K1: Nöbeti devral
+    [*] --> Intro
+    Intro --> Handover: Take the shift
 
-    K1 --> S1: A Önbellek (+5) / B Failover (+3) / süre doldu → A
-    S1 --> Tutor1: Tutor'a sor
-    Tutor1 --> S1
-    S1 --> K2: Devam
+    Handover --> D1: alarm · Go to the crisis
+    D1 --> O1: A Cache (+5) / B Failover (+3) / timeout → A
+    O1 --> Tutor1: Ask the tutor
+    Tutor1 --> O1
+    O1 --> Surge: Back to the field
 
-    K2 --> S2: A Önceliklendir (+0) / B Sunucu ekle (+4) / süre doldu → B
-    S2 --> Tutor2: Tutor'a sor
-    Tutor2 --> S2
-    S2 --> K3: Devam
+    Surge --> D2: alarm · Go to the crisis
+    D2 --> O2: A Prioritize (+0) / B Add servers (+4) / timeout → B
+    O2 --> Tutor2: Ask the tutor
+    Tutor2 --> O2
+    O2 --> Field: Back to the field
 
-    K3 --> S3: A Amaçla sınırlı / B Süresiz ham (kvkk_ihlali) / süre doldu → B
-    S3 --> Tutor3: Tutor'a sor
-    Tutor3 --> S3
-    S3 --> Karar: Devam
+    Field --> D3: 7-A on scene · Go to the final crisis
+    D3 --> O3: A Purpose-limited / B Raw forever (kvkk_ihlali) / timeout → B
+    O3 --> Tutor3: Ask the tutor
+    Tutor3 --> O3
+    O3 --> Check: See the outcome
 
-    state Karar <<choice>>
-    Karar --> SonA: varis_dk ≤ 10
-    Karar --> SonB: varis_dk > 10
+    state Check <<choice>>
+    Check --> EndingA: varis_dk ≤ 10
+    Check --> EndingB: varis_dk > 10
 
-    SonA --> Giris: Baştan oyna
-    SonB --> Giris: Baştan oyna
+    EndingA --> Intro: Play again
+    EndingB --> Intro: Play again
 ```
 
 ---
 
-## 8. Kapsam dışı
+## 8. Out of scope
 
-- Kullanıcı hesabı ve giriş
-- İkinci bölüm / ikinci senaryo
-- Gerçek hasta, gerçek konum veya gerçek harita API'si (tüm veriler kurgusaldır)
-- Native mobil uygulama (yalnız tarayıcıda, AI Studio linkiyle)
-- İlerlemenin oturumlar arasında kaydedilmesi
-
----
-
-## 9. Teknik notlar
-
-- **Hedef ekran:** 360–430 px genişlik, dikey.
-- **Durum:** Tek oturumda bellekte tutulur. Sayfa yenilenince oyun baştan başlar.
-- **Test kimlikleri** (Cypress için):
-  - Giriş: `seviye-yeni`, `seviye-orta`, `seviye-deneyimli`, `rol-*`, `hedef-*`, `basla`
-  - Sahne: `karar-1-a`, `karar-1-b` (2 ve 3 için aynı kalıp), `ipucu-kart`, `sayac`
-  - Sonuç: `sonuc-ne-oldu`, `sonuc-neden`, `tutor-ac`, `devam`
-  - Canlı sevk: `cagri-<id>` (ör. `cagri-C-101`), `ekip-<id>` (ör. `ekip-5-B`), `gorev-<E>` ve `gorev-<E>-a` / `-b`, `alarm`, `krize-gec`, `filo-<id>`
-  - Son: `son-a` / `son-b`, `varis-dk`, `dokum`, `epilog`, `karne`, `bastan`
-- **Test modu:** Adresin sonuna `#test` eklenirse simülasyon 4 kat hızlı akar. Cypress testleri bu modla çalıştırılır.
-- **Cypress:** 8 yol (P1–P8) + KÖ-1 + KÖ-2 + 5 görevin iki seçeneği. Sayaç testi için `cy.clock()` kullanılır. 3. canlı bölüm 7-A'nın varmasını beklediği için o adımda zaman aşımı birkaç saniye uzatılmalıdır.
+- User accounts and login
+- A second chapter or scenario
+- Real patients, real locations or a real map API (all data is fictional)
+- A native mobile app (browser only, via the AI Studio link)
+- Saving progress between sessions
+- Sound and music
+- A leaderboard
 
 ---
 
-## 10. Açık sorular
+## 9. Technical notes
 
-- Tutor hangi modelle çalışacak, AI Studio içindeki Gemini mi?
-- Rol seçimine göre karakter metinleri ne kadar farklılaşacak (sadece hitap mı, tam diyalog mu)?
-- Son ekranında "en iyi yol P5'ti" bilgisi gösterilecek mi, yoksa bu tutor'a mı bırakılacak?
+- **Target screen:** 360–430 px wide, portrait.
+- **State:** held in memory for one session. Reloading the page starts over.
+- **Test IDs** (`data-testid`, for Cypress; the IDs are Turkish words from the first draft of this spec):
+  - Intro: `seviye-yeni`, `seviye-orta`, `seviye-deneyimli` (level), `rol-*` (role), `hedef-*` (goal), `basla` (start)
+  - Crisis: `karar-1-a`, `karar-1-b` (same pattern for 2 and 3), `ipucu-kart` (hint card), `ipucu-ac` (show hint), `sayac` (timer)
+  - Outcome: `sonuc-ne-oldu` (what happened), `sonuc-neden` (why), `sonuc-derin` (expanded note), `sure-doldu` (timed out), `tutor-ac` (open tutor), `devam` (continue)
+  - Live dispatch: `cagri-<id>` (call, e.g. `cagri-C-101`), `ekip-<id>` (crew, e.g. `ekip-5-B`), `gorev-<E>` and `gorev-<E>-a` / `-b` (task), `alarm`, `krize-gec` (go to crisis), `filo-<id>` (fleet cell), `ipucu-canli` (live hint)
+  - Tutor: `tutor-panel`, `tutor-input`, `tutor-gonder` (send), `tutor-yanit` (reply), `tutor-kapat` (close), `tutor-kaynak` (reply source)
+  - End: `son-a` / `son-b` (ending), `varis-dk` (arrival minutes), `dokum` (breakdown), `epilog`, `karne` (shift report), `bastan` (play again)
+  - Status bar: `saat` (clock), `aktif-cagri` (active calls), `tahmini-varis` (ETA)
+- **Test mode:** adding `#test` to the URL runs the simulation 4× faster. Rules and numbers stay the same. Cypress runs in this mode.
+- **Cypress:** 8 paths (P1–P8) plus AE-1 … AE-5. AE-2 uses `cy.clock()` for the timer. The Field phase waits for 7-A to arrive, so the default command timeout is 20 s.
+- **Tutor bridge:** the game calls `window.askTutor({ system, prompt })` when it exists (defined in `aistudio/index.tsx`). Otherwise it uses scripted questions.
+- **Tutor eval mode:** a link on the intro screen runs the 20 eval cases against the connected model and exports a CSV.
+
+---
+
+## 10. Decision log
+
+| Question | Decision |
+|---|---|
+| Which model runs the tutor? | Gemini in AI Studio (gemini-3.8-flash), with a scripted fallback. |
+| How much does the role change? | Only who opens each crisis and how they frame it. Decisions and numbers stay the same, so the paths remain testable. |
+| Should the end screen say which path was best? | No. It shows the path ID and the minute breakdown, and the player draws the conclusion. Saying "P5 was best" would contradict the tutor's no-answers rule. |
+| Should live phases affect the ending? | No. The ending stays a pure function of the three decisions, so the 8-path table holds. Live phases feed the shift report. |
+| Language | The app, README and this spec are in English. The eval documents are in Turkish. |

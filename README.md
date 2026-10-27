@@ -14,7 +14,7 @@ It is Friday night in a fictional city. You are the on-call engineer at an emerg
 | **Play it (Google AI Studio)** | https://ai.studio/apps/c92c0966-9d92-45c2-bc3c-554fd44dcc52 |
 | **Demo video (60 s)** | *[link to be added]* |
 | **Design (Google Stitch)** | https://stitch.withgoogle.com/projects/9828801172742432808 |
-| **Specification** | [`spec.md`](spec.md) (in Turkish) |
+| **Specification** | [`spec.md`](spec.md) |
 
 ---
 
@@ -192,13 +192,13 @@ npm run demo        # ~60 s gameplay run, saved to cypress/videos/demo.cy.js.mp4
 | `cypress/e2e/acceptance.cy.js` | The five acceptance examples from the spec (below) |
 | `cypress/e2e/demo.cy.js` | A full shift for the demo video: dispatching, field tasks, all three crises |
 
-**Acceptance examples:**
+**Acceptance examples** (spec.md, section 6):
 
-1. **A new player sees hints.** Choosing *Just starting* shows a hint card and no timer.
-2. **An experienced player decides under time pressure.** With a fake clock, 61 s pass on Crisis 1, the system applies the cache default and the ETA becomes 9 min.
-3. **The best path ends on time.** B-A-A ends *On time* at 7 min with a clean audit.
-4. **The end screen explains the delay.** A-B-A ends *Delayed* at 13 min, with "Cache +5 min" and "Adding servers +4 min" on separate lines.
-5. **The tutor does not give away the answer.** Asked for the right answer, the reply contains a question and no verdict.
+1. **AE-1 · A new player sees hints.** Choosing *Just starting* shows a hint card and no timer.
+2. **AE-2 · An experienced player decides under time pressure.** With a fake clock, 61 s pass on Crisis 1, the system applies the cache default and the ETA becomes 9 min.
+3. **AE-3 · The best path ends on time.** B-A-A ends *On time* at 7 min with a clean audit.
+4. **AE-4 · The end screen explains the delay.** A-B-A ends *Delayed* at 13 min, with "Cache +5 min" and "Adding servers +4 min" on separate lines.
+5. **AE-5 · The tutor does not give away the answer.** Asked for the right answer, the reply contains a question and no verdict.
 
 The test flows were also replayed with Playwright using the same selectors, and all paths and acceptance examples passed.
 
@@ -207,7 +207,7 @@ The test flows were also replayed with Playwright using the same selectors, and 
 ```
 .
 ├── index.html              # the game (single file)
-├── spec.md                 # specification: problem, scope, 5 acceptance examples, flow diagram (Turkish)
+├── spec.md                 # specification: problem, scope, 5 acceptance examples, flow diagram
 ├── DESIGN.md               # design system as shipped
 ├── aistudio/               # AI Studio version: index.html + index.tsx (Gemini tutor bridge)
 ├── design/                 # Stitch screens, Stitch exports, design-to-code notes
@@ -232,7 +232,7 @@ Also out of scope, as the brief requires: user accounts and login, a second scen
 - The city, people, cases and all numbers are fictional. Nothing here is medical advice.
 - Live dispatch phases affect the shift report, not the ending. The three crisis decisions alone decide the ending.
 - The tutor eval uses 20 cases with one run each. The rates show a direction, not a precise measurement.
-- `spec.md`, the eval documents and the test IDs are in Turkish. The game, design and this README are in English.
+- The eval documents and the test IDs are in Turkish. The game, spec, design and this README are in English.
 
 ## Assignment checklist
 

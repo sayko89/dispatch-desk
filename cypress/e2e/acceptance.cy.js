@@ -1,7 +1,7 @@
-// Acceptance examples from spec.md section 6 (KÖ-1 … KÖ-5).
+// Acceptance examples from spec.md section 6 (AE-1 … AE-5).
 
 describe("Acceptance examples", () => {
-  it("KÖ-1: a new player sees a hint card and no timer", () => {
+  it("AE-1: a new player sees a hint card and no timer", () => {
     cy.startGame({ seviye: "yeni" });
     cy.get("[data-testid=ipucu-canli]").should("be.visible");
     cy.finishLivePhase();
@@ -9,7 +9,7 @@ describe("Acceptance examples", () => {
     cy.get("[data-testid=sayac]").should("not.exist");
   });
 
-  it("KÖ-2: an experienced player who lets 60 s pass gets the default (cache) and 9 min", () => {
+  it("AE-2: an experienced player who lets 60 s pass gets the default (cache) and 9 min", () => {
     cy.clock(); // fake timers: the game loop and the decision timer run on setInterval
     cy.startGame({ seviye: "deneyimli" });
 
@@ -33,7 +33,7 @@ describe("Acceptance examples", () => {
     cy.get("[data-testid=tahmini-varis]").should("contain", "9 min");
   });
 
-  it("KÖ-3: backup + prioritize + purpose-limited ends on time at 7 min with a clean audit", () => {
+  it("AE-3: backup + prioritize + purpose-limited ends on time at 7 min with a clean audit", () => {
     cy.startGame();
     cy.finishLivePhase(); cy.decide(1, "b"); cy.continue();
     cy.finishLivePhase(); cy.decide(2, "a"); cy.continue();
@@ -43,7 +43,7 @@ describe("Acceptance examples", () => {
     cy.get("[data-testid=epilog]").should("contain", "audit passed");
   });
 
-  it("KÖ-4: the end screen breaks the delay down per decision", () => {
+  it("AE-4: the end screen breaks the delay down per decision", () => {
     cy.startGame();
     cy.finishLivePhase(); cy.decide(1, "a"); cy.continue();
     cy.finishLivePhase(); cy.decide(2, "b"); cy.continue();
@@ -56,7 +56,7 @@ describe("Acceptance examples", () => {
     });
   });
 
-  it("KÖ-5: the tutor answers a demand for the answer with a question, not the answer", () => {
+  it("AE-5: the tutor answers a demand for the answer with a question, not the answer", () => {
     cy.startGame();
     cy.finishLivePhase(); cy.decide(1, "a"); cy.continue();
     cy.finishLivePhase(); cy.decide(2, "b");
