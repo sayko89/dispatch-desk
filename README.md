@@ -28,7 +28,7 @@ It is Friday night in a fictional city. You are the on-call engineer at an emerg
 | | |
 |---|---|
 | **Play it (Google AI Studio)** | https://ai.studio/apps/c92c0966-9d92-45c2-bc3c-554fd44dcc52 |
-| **Demo video (60 s)** | *[link to be added]* |
+| **Demo video (60 s)** | *https://youtube.com/shorts/un7lmACvZM4* |
 | **Design (Google Stitch)** | https://stitch.withgoogle.com/projects/9828801172742432808 |
 | **Specification** | [`spec.md`](spec.md) |
 
